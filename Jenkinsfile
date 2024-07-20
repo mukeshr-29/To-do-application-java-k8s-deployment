@@ -72,5 +72,26 @@ pipeline{
                 }
             }
         }
+        stage('deploy to k8s-eks'){
+            steps{
+                script{
+                    withKubeConfig(caCertificate: '', clusterName: 'my-app', contextName: '', credentialsId: 'k8s', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://B76E5E9453AFA51E7CDA591E7878949D.gr7.us-east-1.eks.amazonaws.com'){
+                        sh 'kubectl apply -f deployment.yml -f service.yml'
+                        sleep 30
+
+                    }
+                }
+            }
+        }
+        stage('verify deployment'){
+            steps{
+                script{
+                    withKubeConfig(caCertificate: '', clusterName: 'my-app', contextName: '', credentialsId: 'k8s', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://B76E5E9453AFA51E7CDA591E7878949D.gr7.us-east-1.eks.amazonaws.com'){
+                        sh 'kubectl get pods'
+                        sh 'kubectl get svc'
+                    }
+                }
+            }
+        }
     }
 }
